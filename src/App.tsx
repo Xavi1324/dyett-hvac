@@ -1,4 +1,241 @@
-import { FormEvent, ReactNode, useEffect, useState } from "react";
+import { createContext, FormEvent, ReactNode, useContext, useEffect, useState } from "react";
+
+type Language = "en" | "es";
+
+const spanish: Record<string, string> = {
+  Home: "Inicio",
+  Services: "Servicios",
+  About: "Nosotros",
+  Contact: "Contacto",
+  "Book online": "Reservar",
+  "Request service": "Solicitar servicio",
+  "Serving Elizabeth, NJ & surrounding areas": "Atendemos Elizabeth, NJ y alrededores",
+  "Mon–Fri 8am–6pm": "Lun–Vie 8am–6pm",
+  "Complete comfort care": "Soluciones completas",
+  "How can we help?": "¿Cómo podemos ayudar?",
+  "Explore residential HVAC and commercial refrigeration services.":
+    "Explore nuestros servicios de climatización y refrigeración comercial.",
+  "View all services": "Ver todos los servicios",
+  "About Dyett": "Acerca de Dyett",
+  "Our approach and standards": "Nuestro enfoque y estándares",
+  "Contact our team": "Contacte a nuestro equipo",
+  "Phone, email and office details": "Teléfono, correo y oficina",
+  "Choose a service starting point": "Elija el servicio que necesita",
+  Explore: "Explorar",
+  "About us": "Nosotros",
+  Hours: "Horario",
+  "Mon–Fri: 8am–6pm": "Lun–Vie: 8am–6pm",
+  "Saturday: 8am–4pm": "Sábado: 8am–4pm",
+  "Sunday: Emergency only": "Domingo: solo emergencias",
+  "Residential & commercial service": "Servicio residencial y comercial",
+  "HVAC & refrigeration experts": "Expertos en climatización y refrigeración",
+  "Comfort done right.": "Confort bien hecho.",
+  "Service you can trust.": "Servicio en el que puede confiar.",
+  "Professional heating, cooling and commercial refrigeration service for homes and businesses across Elizabeth, NJ.":
+    "Servicio profesional de calefacción, aire acondicionado y refrigeración comercial para hogares y negocios de Elizabeth, NJ.",
+  "Transparent estimates": "Presupuestos transparentes",
+  "Skilled workmanship": "Trabajo especializado",
+  "Residential & commercial": "Residencial y comercial",
+  "Local service": "Servicio local",
+  "Elizabeth, New Jersey": "Elizabeth, Nueva Jersey",
+  "What we do": "Lo que hacemos",
+  "Complete comfort care,": "Soluciones completas,",
+  "under one roof.": "en un solo lugar.",
+  "From urgent repairs to planned installations, we bring practical expertise to every residential and commercial system.":
+    "Desde reparaciones urgentes hasta instalaciones planificadas, aportamos experiencia práctica a cada sistema residencial y comercial.",
+  "Why Dyett": "Por qué Dyett",
+  "Clear answers.": "Respuestas claras.",
+  "Quality work.": "Trabajo de calidad.",
+  "We believe dependable service starts with listening, diagnosing accurately and explaining your options in plain language.":
+    "Creemos que un servicio confiable comienza escuchando, diagnosticando con precisión y explicando sus opciones claramente.",
+  "Accurate diagnostics": "Diagnósticos precisos",
+  "We identify the root cause—not just the symptom.": "Identificamos la causa, no solo el síntoma.",
+  "Upfront recommendations": "Recomendaciones claras",
+  "Clear options and estimates before work starts.":
+    "Opciones y presupuestos claros antes de comenzar.",
+  "Professional workmanship": "Trabajo profesional",
+  "Careful, code-conscious work built to perform.":
+    "Trabajo cuidadoso, conforme a normas y hecho para durar.",
+  "Meet Dyett HVAC": "Conozca Dyett HVAC",
+  "Built for real life": "Diseñado para la vida real",
+  "Comfort where": "Confort donde",
+  "it matters most.": "más importa.",
+  "Commercial systems": "Sistemas comerciales",
+  "Home comfort": "Confort residencial",
+  "Smart controls": "Controles inteligentes",
+  "Simple process": "Proceso sencillo",
+  "Getting comfortable is easy.": "Recuperar el confort es fácil.",
+  "Tell us what’s happening": "Cuéntenos qué sucede",
+  "Call or send a short service request online.": "Llámenos o envíe una solicitud en línea.",
+  "We inspect & explain": "Inspeccionamos y explicamos",
+  "We diagnose the issue and walk you through your options.":
+    "Diagnosticamos el problema y le explicamos sus opciones.",
+  "We get it done right": "Lo resolvemos correctamente",
+  "Approve the work and our technician handles the rest.":
+    "Apruebe el trabajo y nuestro técnico se encargará del resto.",
+  "Need service?": "¿Necesita servicio?",
+  "Let’s get your system": "Pongamos su sistema",
+  "working the way it should.": "a funcionar como debe.",
+  "Tell us what’s happening and we’ll help you take the next step.":
+    "Cuéntenos qué sucede y le ayudaremos con el siguiente paso.",
+  "Residential & commercial": "Residencial y comercial",
+  "HVAC services built around your needs.": "Servicios HVAC diseñados para sus necesidades.",
+  "Straightforward diagnostics, thoughtful solutions and dependable workmanship for every season.":
+    "Diagnósticos claros, soluciones prácticas y trabajo confiable en cada temporada.",
+  "All services": "Todos los servicios",
+  Service: "Servicio",
+  "Request this service": "Solicitar este servicio",
+  "Professional service": "Servicio profesional",
+  "What we handle": "Lo que atendemos",
+  "Practical solutions.": "Soluciones prácticas.",
+  "Dependable results.": "Resultados confiables.",
+  "Every appointment starts with a careful assessment. We explain what we find, provide clear recommendations and complete approved work with attention to detail.":
+    "Cada visita comienza con una evaluación cuidadosa. Explicamos lo encontrado, presentamos recomendaciones claras y realizamos el trabajo aprobado con atención al detalle.",
+  "About Dyett HVAC": "Acerca de Dyett HVAC",
+  "Local expertise. Professional standards.": "Experiencia local. Estándares profesionales.",
+  "We help property owners make confident decisions about their comfort, equipment and indoor environment.":
+    "Ayudamos a los propietarios a tomar decisiones informadas sobre su confort, equipos y ambiente interior.",
+  "Our approach": "Nuestro enfoque",
+  "Good service starts with the right diagnosis.":
+    "Un buen servicio comienza con el diagnóstico correcto.",
+  "Honest recommendations": "Recomendaciones honestas",
+  "Clear communication": "Comunicación clara",
+  "Respect for your property": "Respeto por su propiedad",
+  "Long-term solutions": "Soluciones duraderas",
+  "Work with us": "Trabaje con nosotros",
+  "Who we serve": "A quién atendemos",
+  "Ready for home": "Listos para hogares",
+  "and business.": "y negocios.",
+  Homeowners: "Propietarios",
+  "Commercial properties": "Propiedades comerciales",
+  "Food-service businesses": "Negocios de alimentos",
+  "Tell us how we can help.": "Cuéntenos cómo podemos ayudar.",
+  "Request service, an installation estimate or a maintenance visit. We’ll follow up to discuss the next step.":
+    "Solicite servicio, un presupuesto de instalación o una visita de mantenimiento. Le contactaremos para coordinar el siguiente paso.",
+  "Reach our team": "Contacte a nuestro equipo",
+  "Let’s get your comfort back on track.": "Recuperemos su confort.",
+  "Prefer to speak with someone? Call during business hours for direct assistance.":
+    "¿Prefiere hablar con alguien? Llame durante el horario comercial.",
+  "Call us": "Llámenos",
+  "Email us": "Escríbanos",
+  Office: "Oficina",
+  "Business hours": "Horario comercial",
+  "Monday–Friday": "Lunes–Viernes",
+  Saturday: "Sábado",
+  Sunday: "Domingo",
+  "Emergency service only": "Solo servicio de emergencia",
+  "Service request": "Solicitud de servicio",
+  "Schedule a visit": "Programe una visita",
+  "First name": "Nombre",
+  "Last name": "Apellido",
+  Phone: "Teléfono",
+  Email: "Correo",
+  "Service needed": "Servicio requerido",
+  "Select a service": "Seleccione un servicio",
+  "Service address": "Dirección del servicio",
+  "Street, city and ZIP code": "Calle, ciudad y código postal",
+  "Tell us what your system is doing...": "Cuéntenos qué está haciendo su sistema...",
+  "Request received": "Solicitud recibida",
+  "Thank you. A member of the Dyett HVAC team will contact you soon.":
+    "Gracias. Un miembro del equipo de Dyett HVAC se comunicará pronto.",
+  "Send another request": "Enviar otra solicitud",
+  "Book online": "Reservar en línea",
+  "Choose your starting point.": "Elija por dónde comenzar.",
+  "Select a service below, then send the details we need to confirm your appointment.":
+    "Seleccione un servicio y envíenos los datos necesarios para confirmar su cita.",
+  "Need urgent help or not sure what to book?": "¿Necesita ayuda urgente o no sabe qué reservar?",
+  "Call 908-977-0722": "Llame al 908-977-0722",
+  "HVAC Maintenance": "Mantenimiento HVAC",
+  "HVAC Repair Visit": "Visita de reparación HVAC",
+  "Installation Consultation": "Consulta de instalación",
+  "60 min": "60 min",
+  "Diagnostic visit": "Visita de diagnóstico",
+  "On-site assessment": "Evaluación en el sitio",
+  "Starting at": "Desde",
+  "Request appointment": "Solicitar cita",
+  "Explore service": "Ver servicio",
+  "HVAC Installation": "Instalación HVAC",
+  "Repair & Diagnostics": "Reparación y diagnóstico",
+  "Preventive Maintenance": "Mantenimiento preventivo",
+  "Heating Services": "Servicios de calefacción",
+  "Commercial Refrigeration": "Refrigeración comercial",
+  "Indoor Air Quality": "Calidad del aire interior",
+  "Mini-Split Service": "Servicio de mini-split",
+  "Walk-In Cooler / Freezer": "Cámaras frigoríficas y congeladores",
+  "Thermostats & Controls": "Termostatos y controles",
+  "Right-sized, efficient systems installed for lasting comfort.":
+    "Sistemas eficientes y dimensionados correctamente para un confort duradero.",
+  "Accurate troubleshooting and practical repairs—without guesswork.":
+    "Diagnósticos precisos y reparaciones prácticas, sin adivinanzas.",
+  "Protect performance, efficiency and the life of your equipment.":
+    "Proteja el rendimiento, la eficiencia y la vida útil de su equipo.",
+  "Safe, dependable heat for homes and commercial spaces.":
+    "Calefacción segura y confiable para hogares y espacios comerciales.",
+  "Reliable temperature control for the businesses that depend on it.":
+    "Control de temperatura confiable para los negocios que dependen de él.",
+  "Cleaner air, balanced humidity and healthier indoor spaces.":
+    "Aire más limpio, humedad equilibrada y espacios interiores más saludables.",
+  "Efficient, targeted comfort without traditional ductwork.":
+    "Confort eficiente y localizado sin ductos tradicionales.",
+  "Commercial cold storage service that keeps business moving.":
+    "Servicio de almacenamiento refrigerado que mantiene su negocio en marcha.",
+  "Smarter, more precise control over your comfort and energy use.":
+    "Control más inteligente y preciso del confort y el consumo energético.",
+  "Professional installation for homes and businesses, including central air, heat pumps and complete HVAC systems. Every system is carefully sized and installed for dependable performance.":
+    "Instalación profesional para hogares y negocios, incluyendo aire central, bombas de calor y sistemas HVAC completos. Cada sistema se dimensiona e instala cuidadosamente.",
+  "We identify electrical, mechanical, airflow and refrigeration problems using a methodical diagnostic process, then explain the right repair before work begins.":
+    "Identificamos problemas eléctricos, mecánicos, de flujo de aire y refrigeración mediante un diagnóstico metódico, y explicamos la reparación antes de comenzar.",
+  "Routine maintenance that catches small problems early and helps your system run efficiently through the hottest and coldest days of the year.":
+    "Mantenimiento rutinario que detecta problemas a tiempo y mantiene el sistema eficiente durante todo el año.",
+  "Installation, repair, diagnostics and maintenance for furnaces, boilers, heat pumps and other heating systems.":
+    "Instalación, reparación, diagnóstico y mantenimiento de hornos, calderas, bombas de calor y otros sistemas.",
+  "Commercial refrigeration installation, repair and maintenance for restaurants, markets, convenience stores and other local businesses.":
+    "Instalación, reparación y mantenimiento de refrigeración comercial para restaurantes, mercados y otros negocios locales.",
+  "Practical air quality and ventilation improvements designed around your property, comfort concerns and existing system.":
+    "Mejoras prácticas de ventilación y calidad del aire diseñadas para su propiedad y sistema actual.",
+  "Installation, repair, diagnostics and maintenance for single-zone and multi-zone ductless mini-split systems.":
+    "Instalación, reparación, diagnóstico y mantenimiento de sistemas mini-split de una o varias zonas.",
+  "Installation and service for walk-in coolers and freezers, including evaporators, condensing units and temperature controls.":
+    "Instalación y servicio de cámaras frigoríficas y congeladores, incluyendo evaporadores, condensadores y controles.",
+  "Installation, replacement and troubleshooting of thermostats, control boards, sensors, wiring and HVAC controls.":
+    "Instalación, reemplazo y diagnóstico de termostatos, tarjetas, sensores, cableado y controles HVAC.",
+  Precise: "Precisión",
+  "diagnostics before repairs": "diagnóstico antes de reparar",
+  "From the equipment outside to the air you feel indoors, every detail of your system plays a part in comfort, efficiency and peace of mind.":
+    "Desde el equipo exterior hasta el aire interior, cada detalle influye en el confort, la eficiencia y su tranquilidad.",
+  "Serving Elizabeth & surrounding communities": "Atendemos Elizabeth y comunidades cercanas",
+  "DYETT HVAC PRO CORP provides professional HVAC and commercial refrigeration solutions focused on reliability, efficiency and quality workmanship.":
+    "DYETT HVAC PRO CORP ofrece soluciones profesionales de climatización y refrigeración comercial enfocadas en confiabilidad, eficiencia y calidad.",
+  "From a simple thermostat issue to a complete commercial system, we bring the same disciplined process: understand the problem, inspect the system, explain the options and do the work carefully.":
+    "Desde un termostato hasta un sistema comercial completo, seguimos el mismo proceso: entender el problema, inspeccionar, explicar las opciones y trabajar con cuidado.",
+  "HVAC, heating and refrigeration support tailored to the demands of each property.":
+    "Servicio de climatización, calefacción y refrigeración adaptado a cada propiedad.",
+  "Year-round comfort, efficient equipment and responsive repairs.":
+    "Confort todo el año, equipos eficientes y reparaciones ágiles.",
+  "Reliable systems that support employees, customers and operations.":
+    "Sistemas confiables para empleados, clientes y operaciones.",
+  "Critical refrigeration support for coolers, freezers and display systems.":
+    "Soporte esencial para refrigeradores, congeladores y vitrinas.",
+  "For urgent service, call": "Para servicio urgente, llame al",
+  "Seasonal inspection, cleaning and system performance check.":
+    "Inspección estacional, limpieza y verificación del rendimiento.",
+  "Professional troubleshooting for heating and cooling issues.":
+    "Diagnóstico profesional de problemas de calefacción y aire acondicionado.",
+  "System evaluation, sizing discussion and installation estimate.":
+    "Evaluación del sistema, dimensionamiento y presupuesto de instalación.",
+  "Displayed rates are starting prices from the existing service menu. Final pricing depends on system condition, parts and approved scope of work.":
+    "Las tarifas son precios iniciales. El precio final depende del estado del sistema, las piezas y el trabajo aprobado.",
+};
+
+const LanguageContext = createContext<{
+  language: Language;
+  setLanguage: (language: Language) => void;
+  t: (text: string) => string;
+}>({ language: "en", setLanguage: () => undefined, t: (text) => text });
+
+function useLanguage() {
+  return useContext(LanguageContext);
+}
 
 const photos = {
   hero: "https://images.unsplash.com/photo-1705579605238-24a90c8799c5?auto=format&fit=crop&w=1800&q=85",
@@ -290,19 +527,43 @@ function Link({
   );
 }
 
+function LanguageSelector() {
+  const { language, setLanguage } = useLanguage();
+  return (
+    <label className="language-selector">
+      <span className="sr-only">Language</span>
+      <select
+        value={language}
+        onChange={(event) => setLanguage(event.target.value as Language)}
+        aria-label="Language"
+      >
+        <option value="en">EN</option>
+        <option value="es">ES</option>
+      </select>
+    </label>
+  );
+}
+
 function Header({ path }: { path: string }) {
+  const { t } = useLanguage();
   const [open, setOpen] = useState(false);
-  const close = () => setOpen(false);
+  const [mobileSubmenu, setMobileSubmenu] = useState<"services" | "about" | null>(null);
+  const [menusDismissed, setMenusDismissed] = useState(false);
+  const close = () => {
+    setOpen(false);
+    setMobileSubmenu(null);
+    setMenusDismissed(true);
+  };
   return (
     <>
       <div className="utility">
         <div className="shell utility-inner">
           <span>
-            <Icon name="pin" size={15} /> Serving Elizabeth, NJ & surrounding areas
+            <Icon name="pin" size={15} /> {t("Serving Elizabeth, NJ & surrounding areas")}
           </span>
           <div>
             <span>
-              <Icon name="clock" size={15} /> Mon–Fri 8am–6pm
+              <Icon name="clock" size={15} /> {t("Mon–Fri 8am–6pm")}
             </span>
             <a href="tel:+19089770722">908-977-0722</a>
           </div>
@@ -313,33 +574,129 @@ function Header({ path }: { path: string }) {
           <Link to="/" onClick={close}>
             <Brand />
           </Link>
-          <nav className={open ? "open" : ""} aria-label="Main navigation">
-            <Link to="/" onClick={close} className={path === "/" ? "active" : ""}>
-              Home
+          <nav
+            className={`${open ? "open" : ""} ${menusDismissed ? "menus-dismissed" : ""}`}
+            aria-label="Main navigation"
+          >
+            <Link to="/" onClick={close} className={`nav-link ${path === "/" ? "active" : ""}`}>
+              {t("Home")}
+            </Link>
+            <div
+              className={`nav-group ${mobileSubmenu === "services" ? "mobile-expanded" : ""}`}
+              onMouseMove={() => setMenusDismissed(false)}
+            >
+              <div className="nav-group-heading">
+                <Link
+                  to="/services"
+                  onClick={close}
+                  className={`nav-link nav-trigger ${path.startsWith("/services") ? "active" : ""}`}
+                >
+                  {t("Services")} <span className="nav-chevron" aria-hidden />
+                </Link>
+                <button
+                  type="button"
+                  className="nav-submenu-toggle"
+                  aria-label={
+                    mobileSubmenu === "services" ? "Close services menu" : "Open services menu"
+                  }
+                  aria-expanded={mobileSubmenu === "services"}
+                  onClick={() => setMobileSubmenu(mobileSubmenu === "services" ? null : "services")}
+                >
+                  <span className="nav-chevron" aria-hidden />
+                </button>
+              </div>
+              <div className="mega-menu">
+                <div className="mega-intro">
+                  <span>{t("Complete comfort care")}</span>
+                  <h3>{t("How can we help?")}</h3>
+                  <p>{t("Explore residential HVAC and commercial refrigeration services.")}</p>
+                  <Link to="/services" onClick={close} className="mega-all">
+                    {t("View all services")} <Icon name="arrow" size={17} />
+                  </Link>
+                </div>
+                <div className="mega-service-grid">
+                  {services.map((service) => (
+                    <Link
+                      to={`/services/${service.slug}`}
+                      onClick={close}
+                      className="mega-service"
+                      key={service.slug}
+                    >
+                      <span>
+                        <Icon name={service.icon} size={20} />
+                      </span>
+                      <div>
+                        <b>{t(service.title)}</b>
+                        <small>{t(service.short)}</small>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div
+              className={`nav-group nav-group-small ${mobileSubmenu === "about" ? "mobile-expanded" : ""}`}
+              onMouseMove={() => setMenusDismissed(false)}
+            >
+              <div className="nav-group-heading">
+                <Link
+                  to="/about"
+                  onClick={close}
+                  className={`nav-link nav-trigger ${path === "/about" ? "active" : ""}`}
+                >
+                  {t("About")} <span className="nav-chevron" aria-hidden />
+                </Link>
+                <button
+                  type="button"
+                  className="nav-submenu-toggle"
+                  aria-label={mobileSubmenu === "about" ? "Close about menu" : "Open about menu"}
+                  aria-expanded={mobileSubmenu === "about"}
+                  onClick={() => setMobileSubmenu(mobileSubmenu === "about" ? null : "about")}
+                >
+                  <span className="nav-chevron" aria-hidden />
+                </button>
+              </div>
+              <div className="mini-menu">
+                <Link to="/about" onClick={close}>
+                  <b>{t("About Dyett")}</b>
+                  <small>{t("Our approach and standards")}</small>
+                </Link>
+                <Link to="/contact" onClick={close}>
+                  <b>{t("Contact our team")}</b>
+                  <small>{t("Phone, email and office details")}</small>
+                </Link>
+                <Link to="/booking" onClick={close}>
+                  <b>{t("Book online")}</b>
+                  <small>{t("Choose a service starting point")}</small>
+                </Link>
+              </div>
+            </div>
+            <Link
+              to="/contact"
+              onClick={close}
+              className={`nav-link ${path === "/contact" ? "active" : ""}`}
+            >
+              {t("Contact")}
             </Link>
             <Link
-              to="/services"
+              to="/booking"
               onClick={close}
-              className={path.startsWith("/services") ? "active" : ""}
+              className={`nav-link ${path === "/booking" ? "active" : ""}`}
             >
-              Services
-            </Link>
-            <Link to="/about" onClick={close} className={path === "/about" ? "active" : ""}>
-              About
-            </Link>
-            <Link to="/contact" onClick={close} className={path === "/contact" ? "active" : ""}>
-              Contact
-            </Link>
-            <Link to="/booking" onClick={close} className={path === "/booking" ? "active" : ""}>
-              Book online
+              {t("Book online")}
             </Link>
           </nav>
+          <LanguageSelector />
           <Link to="/contact" className="button header-cta">
-            Request service <Icon name="arrow" size={17} />
+            {t("Request service")} <Icon name="arrow" size={17} />
           </Link>
           <button
             className="menu-button"
-            onClick={() => setOpen(!open)}
+            onClick={() => {
+              setOpen(!open);
+              setMobileSubmenu(null);
+              setMenusDismissed(false);
+            }}
             aria-label={open ? "Close menu" : "Open menu"}
           >
             <Icon name={open ? "close" : "menu"} size={26} />
@@ -351,6 +708,7 @@ function Header({ path }: { path: string }) {
 }
 
 function Footer() {
+  const { t } = useLanguage();
   return (
     <footer>
       <div className="shell footer-grid">
@@ -362,32 +720,32 @@ function Footer() {
           </p>
         </div>
         <div>
-          <h4>Explore</h4>
-          <Link to="/services">Services</Link>
-          <Link to="/about">About us</Link>
-          <Link to="/booking">Book online</Link>
-          <Link to="/contact">Contact</Link>
+          <h4>{t("Explore")}</h4>
+          <Link to="/services">{t("Services")}</Link>
+          <Link to="/about">{t("About us")}</Link>
+          <Link to="/booking">{t("Book online")}</Link>
+          <Link to="/contact">{t("Contact")}</Link>
         </div>
         <div>
-          <h4>Contact</h4>
+          <h4>{t("Contact")}</h4>
           <a href="tel:+19089770722">908-977-0722</a>
           <a href="mailto:office@dyetthvac.com">office@dyetthvac.com</a>
           <span>
-            355 S Broad St
+            162 Elmora Avenue Ste 501
             <br />
-            Elizabeth, NJ
+            Elizabeth, New Jersey 07202
           </span>
         </div>
         <div>
-          <h4>Hours</h4>
-          <span>Mon–Fri: 8am–6pm</span>
-          <span>Saturday: 8am–4pm</span>
-          <span>Sunday: Emergency only</span>
+          <h4>{t("Hours")}</h4>
+          <span>{t("Mon–Fri: 8am–6pm")}</span>
+          <span>{t("Saturday: 8am–4pm")}</span>
+          <span>{t("Sunday: Emergency only")}</span>
         </div>
       </div>
       <div className="shell copyright">
         <span>© 2026 Dyett HVAC Pro Corp.</span>
-        <span>Residential & commercial service</span>
+        <span>{t("Residential & commercial service")}</span>
       </div>
     </footer>
   );
@@ -401,6 +759,7 @@ function Eyebrow({ children, light = false }: { children: ReactNode; light?: boo
   );
 }
 function ServiceCard({ service }: { service: Service }) {
+  const { t } = useLanguage();
   return (
     <Link to={`/services/${service.slug}`} className="service-card">
       <div className="service-card-photo">
@@ -410,35 +769,37 @@ function ServiceCard({ service }: { service: Service }) {
         </div>
       </div>
       <span className="service-number">{service.number}</span>
-      <h3>{service.title}</h3>
-      <p>{service.short}</p>
+      <h3>{t(service.title)}</h3>
+      <p>{t(service.short)}</p>
       <span className="text-link">
-        Explore service <Icon name="arrow" size={18} />
+        {t("Explore service")} <Icon name="arrow" size={18} />
       </span>
     </Link>
   );
 }
 
 function Home() {
+  const { t } = useLanguage();
   return (
     <main>
       <section className="hero">
         <img src={photos.hero} alt="HVAC technician servicing an outdoor air conditioning unit" />
         <div className="hero-shade" />
         <div className="shell hero-content">
-          <Eyebrow light>HVAC & refrigeration experts</Eyebrow>
+          <Eyebrow light>{t("HVAC & refrigeration experts")}</Eyebrow>
           <h1>
-            Comfort done right.
+            {t("Comfort done right.")}
             <br />
-            <em>Service you can trust.</em>
+            <em>{t("Service you can trust.")}</em>
           </h1>
           <p>
-            Professional heating, cooling and commercial refrigeration service for homes and
-            businesses across Elizabeth, NJ.
+            {t(
+              "Professional heating, cooling and commercial refrigeration service for homes and businesses across Elizabeth, NJ.",
+            )}
           </p>
           <div className="hero-actions">
             <Link to="/contact" className="button">
-              Request service <Icon name="arrow" size={18} />
+              {t("Request service")} <Icon name="arrow" size={18} />
             </Link>
             <a className="button button-ghost" href="tel:+19089770722">
               <Icon name="phone" size={18} /> 908-977-0722
@@ -446,39 +807,40 @@ function Home() {
           </div>
           <div className="trust-row">
             <span>
-              <Icon name="check" size={17} /> Transparent estimates
+              <Icon name="check" size={17} /> {t("Transparent estimates")}
             </span>
             <span>
-              <Icon name="check" size={17} /> Skilled workmanship
+              <Icon name="check" size={17} /> {t("Skilled workmanship")}
             </span>
             <span>
-              <Icon name="check" size={17} /> Residential & commercial
+              <Icon name="check" size={17} /> {t("Residential & commercial")}
             </span>
           </div>
         </div>
         <div className="hero-badge">
-          <b>Local service</b>
-          <span>Elizabeth, New Jersey</span>
+          <b>{t("Local service")}</b>
+          <span>{t("Elizabeth, New Jersey")}</span>
         </div>
       </section>
       <section className="services-section section">
         <div className="shell">
           <div className="section-heading">
             <div>
-              <Eyebrow>What we do</Eyebrow>
+              <Eyebrow>{t("What we do")}</Eyebrow>
               <h2>
-                Complete comfort care,
+                {t("Complete comfort care,")}
                 <br />
-                under one roof.
+                {t("under one roof.")}
               </h2>
             </div>
             <div>
               <p>
-                From urgent repairs to planned installations, we bring practical expertise to every
-                residential and commercial system.
+                {t(
+                  "From urgent repairs to planned installations, we bring practical expertise to every residential and commercial system.",
+                )}
               </p>
               <Link to="/services" className="text-link">
-                View all services <Icon name="arrow" size={18} />
+                {t("View all services")} <Icon name="arrow" size={18} />
               </Link>
             </div>
           </div>
@@ -494,36 +856,37 @@ function Home() {
           <div className="photo-stack">
             <img src={photos.work} alt="Technician connecting service equipment to an HVAC unit" />
             <div className="experience-card">
-              <strong>Precise</strong>
-              <span>diagnostics before repairs</span>
+              <strong>{t("Precise")}</strong>
+              <span>{t("diagnostics before repairs")}</span>
             </div>
           </div>
           <div className="why-copy">
-            <Eyebrow>Why Dyett</Eyebrow>
+            <Eyebrow>{t("Why Dyett")}</Eyebrow>
             <h2>
-              Clear answers.
+              {t("Clear answers.")}
               <br />
-              Quality work.
+              {t("Quality work.")}
             </h2>
             <p className="lead">
-              We believe dependable service starts with listening, diagnosing accurately and
-              explaining your options in plain language.
+              {t(
+                "We believe dependable service starts with listening, diagnosing accurately and explaining your options in plain language.",
+              )}
             </p>
             {[
               ["01", "Accurate diagnostics", "We identify the root cause—not just the symptom."],
               ["02", "Upfront recommendations", "Clear options and estimates before work starts."],
               ["03", "Professional workmanship", "Careful, code-conscious work built to perform."],
-            ].map(([n, t, d]) => (
+            ].map(([n, title, description]) => (
               <div className="reason" key={n}>
                 <span>{n}</span>
                 <div>
-                  <h3>{t}</h3>
-                  <p>{d}</p>
+                  <h3>{t(title)}</h3>
+                  <p>{t(description)}</p>
                 </div>
               </div>
             ))}
             <Link to="/about" className="button button-dark">
-              Meet Dyett HVAC <Icon name="arrow" size={18} />
+              {t("Meet Dyett HVAC")} <Icon name="arrow" size={18} />
             </Link>
           </div>
         </div>
@@ -532,17 +895,18 @@ function Home() {
         <div className="shell">
           <div className="section-heading">
             <div>
-              <Eyebrow>Built for real life</Eyebrow>
+              <Eyebrow>{t("Built for real life")}</Eyebrow>
               <h2>
-                Comfort where
+                {t("Comfort where")}
                 <br />
-                it matters most.
+                {t("it matters most.")}
               </h2>
             </div>
             <div>
               <p>
-                From the equipment outside to the air you feel indoors, every detail of your system
-                plays a part in comfort, efficiency and peace of mind.
+                {t(
+                  "From the equipment outside to the air you feel indoors, every detail of your system plays a part in comfort, efficiency and peace of mind.",
+                )}
               </p>
             </div>
           </div>
@@ -553,7 +917,7 @@ function Home() {
                 alt="HVAC professionals working on rooftop equipment"
                 loading="lazy"
               />
-              <figcaption>Commercial systems</figcaption>
+              <figcaption>{t("Commercial systems")}</figcaption>
             </figure>
             <figure>
               <img
@@ -561,11 +925,11 @@ function Home() {
                 alt="Modern ductless air conditioning system"
                 loading="lazy"
               />
-              <figcaption>Home comfort</figcaption>
+              <figcaption>{t("Home comfort")}</figcaption>
             </figure>
             <figure>
               <img src={photos.control} alt="Modern smart thermostat" loading="lazy" />
-              <figcaption>Smart controls</figcaption>
+              <figcaption>{t("Smart controls")}</figcaption>
             </figure>
           </div>
         </div>
@@ -576,11 +940,12 @@ function Home() {
   );
 }
 function Process() {
+  const { t } = useLanguage();
   return (
     <section className="process section">
       <div className="shell">
-        <Eyebrow light>Simple process</Eyebrow>
-        <h2>Getting comfortable is easy.</h2>
+        <Eyebrow light>{t("Simple process")}</Eyebrow>
+        <h2>{t("Getting comfortable is easy.")}</h2>
         <div className="process-grid">
           {[
             ["01", "Tell us what’s happening", "Call or send a short service request online."],
@@ -590,11 +955,11 @@ function Process() {
               "We diagnose the issue and walk you through your options.",
             ],
             ["03", "We get it done right", "Approve the work and our technician handles the rest."],
-          ].map(([n, t, d]) => (
+          ].map(([n, title, description]) => (
             <div className="process-step" key={n}>
               <b>{n}</b>
-              <h3>{t}</h3>
-              <p>{d}</p>
+              <h3>{t(title)}</h3>
+              <p>{t(description)}</p>
             </div>
           ))}
         </div>
@@ -603,12 +968,13 @@ function Process() {
   );
 }
 function PageHero({ eyebrow, title, text }: { eyebrow: string; title: string; text: string }) {
+  const { t } = useLanguage();
   return (
     <section className="page-hero">
       <div className="shell">
-        <Eyebrow light>{eyebrow}</Eyebrow>
-        <h1>{title}</h1>
-        <p>{text}</p>
+        <Eyebrow light>{t(eyebrow)}</Eyebrow>
+        <h1>{t(title)}</h1>
+        <p>{t(text)}</p>
       </div>
     </section>
   );
@@ -636,23 +1002,26 @@ function ServicesPage() {
 }
 
 function ServiceDetail({ service }: { service: Service }) {
+  const { t } = useLanguage();
   return (
     <main>
       <section className="detail-hero">
         <div className="shell detail-grid">
           <div>
             <Link to="/services" className="back-link">
-              ← All services
+              ← {t("All services")}
             </Link>
             <div className="service-icon large">
               <Icon name={service.icon} size={34} />
             </div>
-            <Eyebrow>{service.number} / Service</Eyebrow>
-            <h1>{service.title}</h1>
-            <p>{service.description}</p>
+            <Eyebrow>
+              {service.number} / {t("Service")}
+            </Eyebrow>
+            <h1>{t(service.title)}</h1>
+            <p>{t(service.description)}</p>
             <div className="hero-actions">
-              <Link to="/contact" className="button">
-                Request this service <Icon name="arrow" size={18} />
+              <Link to={`/contact?service=${service.slug}`} className="button">
+                {t("Request this service")} <Icon name="arrow" size={18} />
               </Link>
               <a href="tel:+19089770722" className="phone-link">
                 Call 908-977-0722
@@ -664,7 +1033,8 @@ function ServiceDetail({ service }: { service: Service }) {
             <div>
               <Icon name="shield" size={24} />
               <span>
-                <b>Professional service</b>Residential & commercial
+                <b>{t("Professional service")}</b>
+                {t("Residential & commercial")}
               </span>
             </div>
           </div>
@@ -673,22 +1043,23 @@ function ServiceDetail({ service }: { service: Service }) {
       <section className="section detail-body">
         <div className="shell detail-body-grid">
           <div>
-            <Eyebrow>What we handle</Eyebrow>
+            <Eyebrow>{t("What we handle")}</Eyebrow>
             <h2>
-              Practical solutions.
+              {t("Practical solutions.")}
               <br />
-              Dependable results.
+              {t("Dependable results.")}
             </h2>
             <p>
-              Every appointment starts with a careful assessment. We explain what we find, provide
-              clear recommendations and complete approved work with attention to detail.
+              {t(
+                "Every appointment starts with a careful assessment. We explain what we find, provide clear recommendations and complete approved work with attention to detail.",
+              )}
             </p>
           </div>
           <div className="bullet-panel">
             {service.bullets.map((b) => (
               <div key={b}>
                 <Icon name="check" size={19} />
-                <span>{b}</span>
+                <span>{t(b)}</span>
               </div>
             ))}
           </div>
@@ -700,6 +1071,7 @@ function ServiceDetail({ service }: { service: Service }) {
 }
 
 function About() {
+  const { t } = useLanguage();
   return (
     <main>
       <PageHero
@@ -711,19 +1083,20 @@ function About() {
         <div className="shell split-layout about-layout">
           <div className="about-photo">
             <img src={photos.hero} alt="Dyett HVAC technician at work" />
-            <div className="photo-label">Serving Elizabeth & surrounding communities</div>
+            <div className="photo-label">{t("Serving Elizabeth & surrounding communities")}</div>
           </div>
           <div className="why-copy">
-            <Eyebrow>Our approach</Eyebrow>
-            <h2>Good service starts with the right diagnosis.</h2>
+            <Eyebrow>{t("Our approach")}</Eyebrow>
+            <h2>{t("Good service starts with the right diagnosis.")}</h2>
             <p className="lead">
-              DYETT HVAC PRO CORP provides professional HVAC and commercial refrigeration solutions
-              focused on reliability, efficiency and quality workmanship.
+              {t(
+                "DYETT HVAC PRO CORP provides professional HVAC and commercial refrigeration solutions focused on reliability, efficiency and quality workmanship.",
+              )}
             </p>
             <p>
-              From a simple thermostat issue to a complete commercial system, we bring the same
-              disciplined process: understand the problem, inspect the system, explain the options
-              and do the work carefully.
+              {t(
+                "From a simple thermostat issue to a complete commercial system, we bring the same disciplined process: understand the problem, inspect the system, explain the options and do the work carefully.",
+              )}
             </p>
             <div className="values">
               {[
@@ -734,12 +1107,12 @@ function About() {
               ].map((v) => (
                 <span key={v}>
                   <Icon name="check" />
-                  {v}
+                  {t(v)}
                 </span>
               ))}
             </div>
             <Link to="/contact" className="button button-dark">
-              Work with us <Icon name="arrow" size={18} />
+              {t("Work with us")} <Icon name="arrow" size={18} />
             </Link>
           </div>
         </div>
@@ -748,14 +1121,18 @@ function About() {
         <div className="shell">
           <div className="section-heading">
             <div>
-              <Eyebrow light>Who we serve</Eyebrow>
+              <Eyebrow light>{t("Who we serve")}</Eyebrow>
               <h2>
-                Ready for home
+                {t("Ready for home")}
                 <br />
-                and business.
+                {t("and business.")}
               </h2>
             </div>
-            <p>HVAC, heating and refrigeration support tailored to the demands of each property.</p>
+            <p>
+              {t(
+                "HVAC, heating and refrigeration support tailored to the demands of each property.",
+              )}
+            </p>
           </div>
           <div className="audience-grid">
             {[
@@ -774,11 +1151,11 @@ function About() {
                 "Food-service businesses",
                 "Critical refrigeration support for coolers, freezers and display systems.",
               ],
-            ].map(([i, t, d]) => (
-              <div key={t}>
+            ].map(([i, title, description]) => (
+              <div key={title}>
                 <Icon name={i as IconName} size={32} />
-                <h3>{t}</h3>
-                <p>{d}</p>
+                <h3>{t(title)}</h3>
+                <p>{t(description)}</p>
               </div>
             ))}
           </div>
@@ -790,7 +1167,12 @@ function About() {
 }
 
 function ContactForm() {
+  const { t } = useLanguage();
   const [sent, setSent] = useState(false);
+  const requestedService = new URLSearchParams(window.location.search).get("service") || "";
+  const selectedService = services.some((service) => service.slug === requestedService)
+    ? requestedService
+    : "";
   function submit(e: FormEvent) {
     e.preventDefault();
     setSent(true);
@@ -801,10 +1183,10 @@ function ContactForm() {
         <span>
           <Icon name="check" size={28} />
         </span>
-        <h3>Request received</h3>
-        <p>Thank you. A member of the Dyett HVAC team will contact you soon.</p>
+        <h3>{t("Request received")}</h3>
+        <p>{t("Thank you. A member of the Dyett HVAC team will contact you soon.")}</p>
         <button className="text-link" onClick={() => setSent(false)}>
-          Send another request
+          {t("Send another request")}
         </button>
       </div>
     );
@@ -812,58 +1194,61 @@ function ContactForm() {
     <form onSubmit={submit}>
       <div className="form-row">
         <label>
-          First name
+          {t("First name")}
           <input required name="firstName" />
         </label>
         <label>
-          Last name
+          {t("Last name")}
           <input required name="lastName" />
         </label>
       </div>
       <div className="form-row">
         <label>
-          Phone
+          {t("Phone")}
           <input required name="phone" type="tel" />
         </label>
         <label>
-          Email
+          {t("Email")}
           <input required name="email" type="email" />
         </label>
       </div>
       <label>
-        Service needed
-        <select required defaultValue="">
+        {t("Service needed")}
+        <select required defaultValue={selectedService}>
           <option value="" disabled>
-            Select a service
+            {t("Select a service")}
           </option>
           {services.map((s) => (
-            <option key={s.slug}>{s.title}</option>
+            <option value={s.slug} key={s.slug}>
+              {t(s.title)}
+            </option>
           ))}
         </select>
       </label>
       <label>
-        Service address
-        <input required name="address" placeholder="Street, city and ZIP code" />
+        {t("Service address")}
+        <input required name="address" placeholder={t("Street, city and ZIP code")} />
       </label>
       <label>
-        How can we help?
+        {t("How can we help?")}
         <textarea
           required
           name="message"
           rows={4}
-          placeholder="Tell us what your system is doing..."
+          placeholder={t("Tell us what your system is doing...")}
         />
       </label>
       <button className="button" type="submit">
-        Request service <Icon name="arrow" size={18} />
+        {t("Request service")} <Icon name="arrow" size={18} />
       </button>
       <small>
-        For urgent service, call <a href="tel:+19089770722">908-977-0722</a>.
+        {t("For urgent service, call")} <a href="tel:+19089770722">908-977-0722</a>.
       </small>
     </form>
   );
 }
 function Contact() {
+  const { t } = useLanguage();
   return (
     <main>
       <PageHero
@@ -874,22 +1259,24 @@ function Contact() {
       <section className="section contact-section">
         <div className="shell contact-grid">
           <div className="contact-info">
-            <Eyebrow>Reach our team</Eyebrow>
-            <h2>Let’s get your comfort back on track.</h2>
-            <p>Prefer to speak with someone? Call during business hours for direct assistance.</p>
+            <Eyebrow>{t("Reach our team")}</Eyebrow>
+            <h2>{t("Let’s get your comfort back on track.")}</h2>
+            <p>
+              {t("Prefer to speak with someone? Call during business hours for direct assistance.")}
+            </p>
             <a href="tel:+19089770722" className="contact-line">
               <span>
                 <Icon name="phone" />
               </span>
               <div>
-                <small>Call us</small>
+                <small>{t("Call us")}</small>
                 <b>908-977-0722</b>
               </div>
             </a>
             <a href="mailto:office@dyetthvac.com" className="contact-line">
               <span>@</span>
               <div>
-                <small>Email us</small>
+                <small>{t("Email us")}</small>
                 <b>office@dyetthvac.com</b>
               </div>
             </a>
@@ -898,30 +1285,34 @@ function Contact() {
                 <Icon name="pin" />
               </span>
               <div>
-                <small>Service area</small>
-                <b>Elizabeth, NJ & surrounding areas</b>
+                <small>{t("Office")}</small>
+                <b>
+                  162 Elmora Avenue Ste 501
+                  <br />
+                  Elizabeth, New Jersey 07202
+                </b>
               </div>
             </div>
             <div className="hours">
-              <h3>Business hours</h3>
+              <h3>{t("Business hours")}</h3>
               <p>
-                <span>Monday–Friday</span>
+                <span>{t("Monday–Friday")}</span>
                 <b>8:00am–6:00pm</b>
               </p>
               <p>
-                <span>Saturday</span>
+                <span>{t("Saturday")}</span>
                 <b>8:00am–4:00pm</b>
               </p>
               <p>
-                <span>Sunday</span>
-                <b>Emergency service only</b>
+                <span>{t("Sunday")}</span>
+                <b>{t("Emergency service only")}</b>
               </p>
             </div>
           </div>
           <div className="form-card">
             <div>
-              <span>Service request</span>
-              <h2>Schedule a visit</h2>
+              <span>{t("Service request")}</span>
+              <h2>{t("Schedule a visit")}</h2>
             </div>
             <ContactForm />
           </div>
@@ -931,6 +1322,7 @@ function Contact() {
   );
 }
 function Booking() {
+  const { t } = useLanguage();
   const offers = [
     [
       "HVAC Maintenance",
@@ -965,8 +1357,8 @@ function Booking() {
         <div className="shell">
           <div className="booking-note">
             <Icon name="phone" />
-            <span>Need urgent help or not sure what to book?</span>
-            <a href="tel:+19089770722">Call 908-977-0722</a>
+            <span>{t("Need urgent help or not sure what to book?")}</span>
+            <a href="tel:+19089770722">{t("Call 908-977-0722")}</a>
           </div>
           <div className="booking-grid">
             {offers.map(([title, price, time, desc, slug]) => (
@@ -974,22 +1366,23 @@ function Booking() {
                 <div className="service-icon">
                   <Icon name={services.find((s) => s.slug === slug)?.icon || "wrench"} />
                 </div>
-                <small>{time}</small>
-                <h2>{title}</h2>
-                <p>{desc}</p>
+                <small>{t(time)}</small>
+                <h2>{t(title)}</h2>
+                <p>{t(desc)}</p>
                 <div className="price">
-                  <span>Starting at</span>
+                  <span>{t("Starting at")}</span>
                   <b>{price}</b>
                 </div>
-                <Link to="/contact" className="button">
-                  Request appointment <Icon name="arrow" size={18} />
+                <Link to={`/contact?service=${slug}`} className="button">
+                  {t("Request appointment")} <Icon name="arrow" size={18} />
                 </Link>
               </div>
             ))}
           </div>
           <p className="booking-disclaimer">
-            Displayed rates are starting prices from the existing service menu. Final pricing
-            depends on system condition, parts and approved scope of work.
+            {t(
+              "Displayed rates are starting prices from the existing service menu. Final pricing depends on system condition, parts and approved scope of work.",
+            )}
           </p>
         </div>
       </section>
@@ -997,22 +1390,23 @@ function Booking() {
   );
 }
 function CTA() {
+  const { t } = useLanguage();
   return (
     <section className="cta">
       <div className="shell cta-inner">
         <div>
-          <Eyebrow light>Need service?</Eyebrow>
+          <Eyebrow light>{t("Need service?")}</Eyebrow>
           <h2>
-            Let’s get your system
+            {t("Let’s get your system")}
             <br />
-            working the way it should.
+            {t("working the way it should.")}
           </h2>
         </div>
         <div>
-          <p>Tell us what’s happening and we’ll help you take the next step.</p>
+          <p>{t("Tell us what’s happening and we’ll help you take the next step.")}</p>
           <div>
             <Link to="/contact" className="button button-light">
-              Request service <Icon name="arrow" size={18} />
+              {t("Request service")} <Icon name="arrow" size={18} />
             </Link>
             <a href="tel:+19089770722" className="cta-phone">
               <Icon name="phone" size={19} /> 908-977-0722
@@ -1025,7 +1419,16 @@ function CTA() {
 }
 
 export default function App() {
+  const [language, setLanguage] = useState<Language>(() => {
+    const saved = window.localStorage.getItem("dyett-language");
+    return saved === "es" ? "es" : "en";
+  });
   const [path, setPath] = useState(window.location.pathname);
+  const t = (text: string) => (language === "es" ? spanish[text] || text : text);
+  useEffect(() => {
+    window.localStorage.setItem("dyett-language", language);
+    document.documentElement.lang = language;
+  }, [language]);
   useEffect(() => {
     const update = () => {
       setPath(window.location.pathname);
@@ -1041,8 +1444,8 @@ export default function App() {
         : path.startsWith("/services/")
           ? services.find((service) => path.endsWith(service.slug))?.title || "Service"
           : path.slice(1).replace(/^\w/, (letter) => letter.toUpperCase());
-    document.title = `${pageName} | Dyett HVAC Pro Corp.`;
-  }, [path]);
+    document.title = `${t(pageName)} | Dyett HVAC Pro Corp.`;
+  }, [path, language]);
   let page: ReactNode;
   if (path === "/") page = <Home />;
   else if (path === "/services") page = <ServicesPage />;
@@ -1054,13 +1457,13 @@ export default function App() {
     page = service ? <ServiceDetail service={service} /> : <ServicesPage />;
   } else page = <Home />;
   return (
-    <>
+    <LanguageContext.Provider value={{ language, setLanguage, t }}>
       <Header path={path} />
       {page}
       <Footer />
       <a className="mobile-call" href="tel:+19089770722">
-        <Icon name="phone" size={19} /> Call now
+        <Icon name="phone" size={19} /> {language === "es" ? "Llamar ahora" : "Call now"}
       </a>
-    </>
+    </LanguageContext.Provider>
   );
 }
