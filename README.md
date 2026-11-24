@@ -26,11 +26,15 @@ Es un sitio estático. En Vercel / Netlify / Cloudflare Pages:
 - **Output directory:** `dist`
 - **Install command:** `pnpm install`
 
-## Pendientes antes de salir a producción
+## Pendientes
 
-- **Formulario de contacto:** actualmente solo muestra un mensaje de éxito; no envía datos (`ContactForm` en `src/App.tsx`). Conectarlo a un servicio (Formspree, Resend, etc.).
-- **Indexación:** `.figma/make/site.json` tiene `robots.index: false`, lo que genera un `robots.txt` con `Disallow: /`. Cambiarlo a `true` cuando el sitio esté listo para aparecer en Google.
+- **Formulario de contacto:** actualmente solo muestra un mensaje de éxito; no envía datos (`ContactForm` en `src/App.tsx`). Planeado: guardar los envíos en Supabase (con panel) o en Google Sheets.
 - **Dominio:** configurar el dominio propio en el proveedor de hosting.
+- **SEO (opcional):** agregar `sitemap.xml` y enviarlo a Google Search Console.
+
+## Indexación
+
+El sitio está abierto a buscadores: `.figma/make/site.json` tiene `robots.index: true`, por lo que no se genera un `robots.txt` bloqueante.
 
 ## Notas
 
