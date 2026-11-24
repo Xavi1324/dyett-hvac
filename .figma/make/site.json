@@ -1,0 +1,10 @@
+{
+  "description": "A professional HVAC company website that helps homeowners explore heating and cooling services, find service information, and easily request help.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
